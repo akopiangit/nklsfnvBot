@@ -1,4 +1,4 @@
-package ru.nklsfnv.nklsfnvbot.telegram;
+package ru.nklsfnv.nklsfnvbot.configuration;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.nklsfnv.nklsfnvbot.service.MessageGate;
+import ru.nklsfnv.nklsfnvbot.telegram.BotMainClass;
 
 @Configuration
 public class TelegramConfiguration {
