@@ -11,8 +11,11 @@ spring:
     password: 123
   liquibase:
     change-log: classpath:liquibase/migration.yml
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+
+server:
+  port: 8082

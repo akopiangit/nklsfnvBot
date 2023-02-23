@@ -2,10 +2,12 @@ package ru.nklsfnv.nklsfnvbot.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Table(schema = "tg", name = "user")
 @Entity
 @Data
+@ToString
 public class User {
 
     @Id
@@ -15,5 +17,8 @@ public class User {
 
     @Column(name = "NAME")
     private String name;
+
+    @Column(name = "USERNAME")
+    private String userName;
 
 }

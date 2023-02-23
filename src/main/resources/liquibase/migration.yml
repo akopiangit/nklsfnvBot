@@ -1,3 +1,7 @@
 databaseChangeLog:
+
   - include:
       file: liquibase/create-table-user.xml
+
+  - include:
+      file: liquibase/add_column_username_to_user.xml
