@@ -3,16 +3,21 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create sequence for user" author="a.akopyan">
-        <createSequence incrementBy="1" schemaName="tg" sequenceName="user_id_sequence"/>
+    <changeSet id="create sequence for telegram_user" author="a.akopyan">
+        <createSequence incrementBy="1" schemaName="igropoisk" sequenceName="user_id_sequence"/>
     </changeSet>
 
-    <changeSet id="create table user" author="a.akopyan">
-        <createTable tableName="user" schemaName="tg">
+    <changeSet id="create table telegram_user" author="a.akopyan">
+        <createTable tableName="telegram_user" schemaName="igropoisk">
             <column name="id" type="numeric(19)">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
             <column name="name" type="varchar(255)"/>
+            <column name="username" type="varchar(1024)"/>
+            <column name="profile_id" type="numeric(19)"/>
         </createTable>
+        <addForeignKeyConstraint baseTableName="telegram_user" baseColumnNames="profile_id" constraintName="telegram_user_profile_id_foreign_key" referencedTableName="profile"
+                                 referencedColumnNames="id" referencedTableSchemaName="igropoisk" baseTableSchemaName="igropoisk"/>
+
     </changeSet>
 </databaseChangeLog>
