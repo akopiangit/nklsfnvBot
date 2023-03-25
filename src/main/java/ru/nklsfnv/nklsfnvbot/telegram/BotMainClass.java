@@ -41,6 +41,12 @@ public class BotMainClass extends TelegramLongPollingBot {
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
+        } else if (update.hasCallbackQuery()) {
+            try {
+                execute(messageGate.resolveMessage(update.getCallbackQuery()));
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

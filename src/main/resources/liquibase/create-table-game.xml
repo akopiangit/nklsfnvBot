@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create sequence for game" author="a.akopyan">
+        <createSequence incrementBy="1" schemaName="igropoisk" sequenceName="game_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="create table game" author="a.akopyan">
+        <createTable tableName="game" schemaName="igropoisk">
+            <column name="id" type="numeric(19)">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="imageLink" type="varchar(2048)"/>
+            <column name="rating" type="numeric(19,2)"/>
+            <column name="igdb_rating" type="numeric(19,2)"/>
+            <column name="igdb_id" type="numeric(19)"/>
+            <column name="CREATED_DATE" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFIED_DATE" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -12,7 +12,11 @@
             <column name="id" type="numeric(19)">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(255)"/>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_DATE" type="timestamp"/>
+            <column name="MODIFIED_DATE" type="timestamp"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

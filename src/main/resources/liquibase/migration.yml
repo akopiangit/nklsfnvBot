@@ -5,3 +5,9 @@ databaseChangeLog:
 
   - include:
       file: liquibase/create-table-user.xml
+
+  - include:
+      file: liquibase/create-table-game.xml
+
+  - include:
+      file: liquibase/create-table-score.xml

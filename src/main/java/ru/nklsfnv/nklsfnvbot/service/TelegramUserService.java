@@ -2,6 +2,7 @@ package ru.nklsfnv.nklsfnvbot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.nklsfnv.nklsfnvbot.model.entity.TelegramUser;
 import ru.nklsfnv.nklsfnvbot.repository.TelegramUserRepository;
 
@@ -12,6 +13,7 @@ public class TelegramUserService {
     private final TelegramUserRepository telegramUserRepository;
     private final ProfileService profileService;
 
+    @Transactional
     public void saveUserFromTelegram(String name, String userName) {
         TelegramUser telegramUser = telegramUserRepository.findByUserName(userName);
         if (telegramUser != null) {

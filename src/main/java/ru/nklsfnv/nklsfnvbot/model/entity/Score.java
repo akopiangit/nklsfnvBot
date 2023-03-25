@@ -6,20 +6,27 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-
-@Table(schema = "IGROPOISK", name = "PROFILE")
+@Table(schema = "IGROPOISK", name = "SCORE")
 @Entity
 @Data
 @ToString
-public class Profile {
+public class Score {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROFILE_ID_SEQUENCE")
-    @SequenceGenerator(name = "PROFILE_ID_SEQUENCE", sequenceName = "PROFILE_ID_SEQUENCE", allocationSize = 1, schema = "IGROPOISK")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SCORE_ID_SEQUENCE")
+    @SequenceGenerator(name = "SCORE_ID_SEQUENCE", sequenceName = "SCORE_ID_SEQUENCE", allocationSize = 1, schema = "IGROPOISK")
     private Long id;
 
-    @Column(name = "NAME")
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "PROFILE_ID")
+    private Profile profile;
+
+    @OneToOne
+    @JoinColumn(name = "GAME_ID")
+    private Game game;
+
+    @Column(name = "SCORE")
+    private Double score;
 
     @Column(name = "CREATED_DATE")
     private LocalDateTime createdDate;
@@ -37,6 +44,5 @@ public class Profile {
     public void preUpdate() {
         this.modifiedDate = LocalDateTime.now();
     }
-
 
 }

@@ -3,22 +3,22 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create sequence for telegram_user" author="a.akopyan">
-        <createSequence incrementBy="1" schemaName="igropoisk" sequenceName="user_id_sequence"/>
+    <changeSet id="create sequence for score" author="a.akopyan">
+        <createSequence incrementBy="1" schemaName="igropoisk" sequenceName="score_id_sequence"/>
     </changeSet>
 
-    <changeSet id="create table telegram_user" author="a.akopyan">
-        <createTable tableName="telegram_user" schemaName="igropoisk">
+    <changeSet id="create table score" author="a.akopyan">
+        <createTable tableName="score" schemaName="igropoisk">
             <column name="id" type="numeric(19)">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="username" type="varchar(1024)">
-                <constraints nullable="false"/>
-            </column>
             <column name="profile_id" type="numeric(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="game_id" type="numeric(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="score" type="numeric(19,2)">
                 <constraints nullable="false"/>
             </column>
             <column name="CREATED_DATE" type="timestamp">
@@ -28,7 +28,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="telegram_user" baseColumnNames="profile_id" constraintName="telegram_user_profile_id_foreign_key" referencedTableName="profile"
+        <addForeignKeyConstraint baseTableName="telegram_user" baseColumnNames="profile_id" constraintName="score_profile_id_foreign_key" referencedTableName="profile"
                                  referencedColumnNames="id" referencedTableSchemaName="igropoisk" baseTableSchemaName="igropoisk"/>
 
     </changeSet>

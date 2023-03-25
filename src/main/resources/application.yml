@@ -3,6 +3,16 @@ ru:
     bot:
       name:
       token:
+
+igdb:
+  timeout_value: 5
+  api:
+    root_uri: "https://api.igdb.com/v4"
+    client_id:
+    client_secret:
+  twitch:
+    auth_uri: "https://id.twitch.tv/oauth2/token"
+    auth_default_grant_type: client_credentials
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
