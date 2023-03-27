@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.nklsfnv.nklsfnvbot.igdb.GameDto;
+import ru.nklsfnv.nklsfnvbot.service.session.SessionState;
+import ru.nklsfnv.nklsfnvbot.service.session.TelegramSessionService;
 import ru.nklsfnv.nklsfnvbot.utils.AppUtils;
 import ru.nklsfnv.nklsfnvbot.utils.KeyBoardCallback;
 import ru.nklsfnv.nklsfnvbot.utils.TelegramKeyboardUtils;
@@ -19,64 +20,75 @@ import ru.nklsfnv.nklsfnvbot.utils.TelegramKeyboardUtils;
 public class MessageGate {
 
     private final TelegramUserService telegramUserService;
-    private final GameService gameService;
+    private final TelegramSessionService telegramSessionService;
+    private final TelegramFeatureService telegramFeatureService;
 
     public SendMessage resolveMessage(CallbackQuery callbackQuery) {
-        String chatId = callbackQuery.getMessage().getChatId().toString();
+        Long chatId = callbackQuery.getMessage().getChatId();
         KeyBoardCallback keyBoardCallback = KeyBoardCallback.byData(callbackQuery.getData());
         String text;
         switch (keyBoardCallback) {
-            case FIND_GAME -> text = "Введите: Я ищу {название игры}";
-            case FIND_SIMILAR -> text = "Введите: Я ищу похожую на {название игры}";
+            case FIND_GAME -> {
+                text = "Введите название игры, которую ищете";
+                telegramSessionService.update(chatId, SessionState.FIND_GAME);
+                return SendMessage.builder()
+                        .chatId(chatId.toString())
+                        .text(text)
+                        .build();
+            }
+            case FIND_SIMILAR_GAMES -> {
+                telegramSessionService.update(chatId, SessionState.FIND_SIMILAR);
+                return telegramFeatureService.returnKeyboardWithSimilarGames(chatId);
+            }
+            case CANCEL -> {
+                text = "Что нибудь еще?";
+                telegramSessionService.update(chatId, SessionState.NONE);
+                return SendMessage.builder()
+                        .chatId(chatId.toString())
+                        .text(text)
+                        .build();
+            }
+            case FIND_BY_ID -> {
+                telegramSessionService.update(chatId, SessionState.NONE);
+                return telegramFeatureService.findGameByIdFromCallbackData(callbackQuery.getData(), chatId);
+            }
             default -> throw new IllegalArgumentException("Неизвестный колбэк");
         }
-        return SendMessage.builder()
-                .chatId(chatId)
-                .text(text)
-                .build();
+
     }
 
     public SendMessage resolveMessage(Message inMessage) {
-        String chatId = inMessage.getChatId().toString();
-        return switch (inMessage.getText()) {
-            case "/start" -> SendMessage.builder()
-                    .chatId(chatId)
-                    .text("Привет, " + AppUtils.getFullName(
-                            inMessage.getChat().getFirstName(),
-                            inMessage.getChat().getLastName()))
-                    .replyMarkup(TelegramKeyboardUtils.getInlineKeyboardOnStart(KeyBoardCallback.FIND_GAME, KeyBoardCallback.FIND_SIMILAR))
-                    .build();
-            default -> SendMessage.builder()
-                    .chatId(chatId)
-                    .text(getAnswer(inMessage))
-                    .build();
-        };
-    }
-
-    public String getAnswer(Message inMessage) {
-        log.info(
-                "user [{} {} {}] sent message : \n [{}]",
-                inMessage.getChat().getFirstName(),
-                inMessage.getChat().getLastName(),
-                inMessage.getChat().getUserName(),
-                inMessage.getText()
-        );
-        String text = inMessage.getText();
+        Long chatId = inMessage.getChatId();
         telegramUserService.saveUserFromTelegram(
                 AppUtils.getFullName(inMessage.getChat().getFirstName(), inMessage.getChat().getLastName()),
                 inMessage.getChat().getUserName()
         );
-        GameDto game = gameService.findGameInIgdbByTitle(text);
-        if (game != null) {
-            return String.format(
-                    "Найдена такая игра: \nНазвание: %s Рейтинг: %s\nОписание: %s",
-                    game.getName(),
-                    game.getRating(),
-                    game.getStoryline()
-            );
-        } else {
-            return "Не могу найти такую игру =(";
+        SessionState sessionState = telegramSessionService.findOrCreateSession(chatId).getSessionState();
+        if (sessionState == SessionState.FIND_GAME) {
+            return resolveFeature(inMessage, sessionState, chatId);
         }
+        return switch (inMessage.getText()) {
+            case "/start" -> SendMessage.builder()
+                    .chatId(chatId.toString())
+                    .text("Привет, " + AppUtils.getFullName(
+                            inMessage.getChat().getFirstName(),
+                            inMessage.getChat().getLastName()) + ". Выбери что нибудь на клавиатуре.")
+                    .replyMarkup(TelegramKeyboardUtils.getInlineKeyboardWithCallbacks(KeyBoardCallback.FIND_GAME))
+                    .build();
+            default -> SendMessage.builder()
+                    .chatId(chatId.toString())
+                    .text("Выбери что нибудь на клавиатуре")
+                    .replyMarkup(TelegramKeyboardUtils.getInlineKeyboardWithCallbacks(KeyBoardCallback.FIND_GAME))
+                    .build();
+        };
+    }
+
+    private SendMessage resolveFeature(Message inMessage, SessionState sessionState, Long chatId) {
+        telegramSessionService.update(chatId, SessionState.NONE);
+        return switch (sessionState) {
+            case FIND_GAME -> telegramFeatureService.findGameByName(inMessage.getText(), inMessage.getChatId());
+            default -> throw new IllegalArgumentException("Неизвестный статус сессии");
+        };
     }
 
 }
